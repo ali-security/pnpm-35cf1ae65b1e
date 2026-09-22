@@ -19,7 +19,11 @@ test('tarball from npm registry (immutable)', async () => {
   })
 })
 test('tarball from npm.jsr.io registry (immutable)', async () => {
-  const resolutionResult = await resolveFromTarball({ bareSpecifier: 'http://npm.jsr.io/~/11/@jsr/luca__flag/1.0.1.tgz' })
+  // npm.jsr.io serves tarballs over https directly without redirecting from
+  // http (unlike registry.npmjs.org), so the resolver can only return an https
+  // URL when given an https URL. See the registry.npmjs.org test above for the
+  // http -> https redirect behavior.
+  const resolutionResult = await resolveFromTarball({ bareSpecifier: 'https://npm.jsr.io/~/11/@jsr/luca__flag/1.0.1.tgz' })
 
   expect(resolutionResult).toStrictEqual({
     id: 'https://npm.jsr.io/~/11/@jsr/luca__flag/1.0.1.tgz',
