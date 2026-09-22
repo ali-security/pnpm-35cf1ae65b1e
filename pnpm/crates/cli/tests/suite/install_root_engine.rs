@@ -136,9 +136,22 @@ fn update_config_can_disable_the_root_engine_check() {
 #[test]
 fn no_runtime_checks_the_active_node_instead_of_the_manifest_runtime() {
     let CommandTempCwd { pacquet, root, workspace, .. } = CommandTempCwd::init();
-    let node_version = node_version_at(Path::new("."));
+    let package_json = workspace.join("package.json");
     fs::write(
-        workspace.join("package.json"),
+        &package_json,
+        serde_json::json!({
+            "name": "compatible-root",
+            "version": "1.0.0",
+            "devEngines": {
+                "runtime": { "name": "node", "version": ">=1.0.0" },
+            },
+        })
+        .to_string(),
+    )
+    .expect("write devEngines package.json");
+    let node_version = node_version_at(&workspace);
+    fs::write(
+        &package_json,
         serde_json::json!({
             "name": "compatible-root",
             "version": "1.0.0",
